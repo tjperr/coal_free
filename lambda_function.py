@@ -6,7 +6,6 @@ import requests
 from io import StringIO
 
 import httplib2
-import pandas as pd
 
 
 def lambda_handler(event, context):
@@ -23,28 +22,12 @@ def lambda_handler(event, context):
     )
     content = response.text
 
-    try:
-        df = pd.read_csv(
-            StringIO(content),
-            skiprows=1,
-            skipfooter=2,  # skip footer and total row
-            header=None,
-        )
-
-        df.columns = [
-            "REPORT",
-            "TYPE",
-            "CURR_MW",
-            "CURR_PCT",
-            "LHH_MW",
-            "LHH_PCT",
-            "L24H_MW",
-            "L24H_PCT",
-        ]
-    except:
-        raise ValueError(f"BMRS response could not be successfully parsed\n\n{content}")
-
-    coal_24h_percent = df["L24H_PCT"].values[0]
+    coal = content.split('\n')[1] # extract the COAL row from the reponse
+    fields = coal.split(',')
+    if len(fields) != 8:
+        raise ValueError(f"Response from BMRS has unexpected length ({len(fields)}). Expected 8.")
+    
+    coal_24h_percent = fields[7]
     return {"statusCode": 200, "body": json.dumps(coal_24h_percent)}
 
 if __name__ == "__main__":
