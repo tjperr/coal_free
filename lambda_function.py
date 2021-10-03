@@ -27,8 +27,8 @@ def lambda_handler(event, context):
     if len(fields) != 8:
         raise ValueError(f"Response from BMRS has unexpected length ({len(fields)}). Expected 8.")
     
-    coal_24h_percent = fields[7]
-    return {"statusCode": 200, "body": json.dumps(coal_24h_percent)}
+    coal_24h_percent = float(fields[7])
+    return {"statusCode": 200, "body": coal_24h_percent}
 
 if __name__ == "__main__":
     print(lambda_handler(1, 2))
