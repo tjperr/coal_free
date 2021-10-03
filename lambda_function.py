@@ -1,40 +1,51 @@
 # https://www.elexon.co.uk/documents/training-guidance/bsc-guidance-notes/bmrs-api-and-data-push-user-guide-2/
 # Use SAM? https://towardsdatascience.com/using-serverless-and-sam-to-deploy-a-scheduled-lambda-with-packages-ed7efdc73070
-import httplib2
-import os
-
 import json
+import os
+import requests
+from io import StringIO
+
+import httplib2
+import pandas as pd
+
 
 def lambda_handler(event, context):
-    print('working')
-    bmrs_key = os.environ['bmrs_key']
-    x = post_elexon(
-        url=f"https://api.bmreports.com/BMRS/FUELINSTHHCUR/v1?APIKey={bmrs_key}&FuelType=COAL&ServiceType=csv",
+    print("working")
+
+    session = requests.session()
+    response = session.get(
+        f"https://api.bmreports.com/BMRS/FUELINSTHHCUR/v1",
+        params={
+            "APIKey": os.environ["bmrs_key"],
+            "FuelType": "COAL",
+            "ServiceType": "csv",
+        },
     )
-    print('working')
-    coal_24h_percent = float(str(x).split(',')[8].split('\\n')[0])
-    print(coal_24h_percent)
-    return {
-        'statusCode': 200,
-        'body': json.dumps(coal_24h_percent)
-    }
+    content = response.text
 
+    try:
+        df = pd.read_csv(
+            StringIO(content),
+            skiprows=1,
+            skipfooter=2,  # skip footer and total row
+            header=None,
+        )
 
-def post_elexon(url):
-    http_obj = httplib2.Http()
-    resp, content = http_obj.request(
-    uri=url,
-    method='GET',
-    headers={'Content-Type': 'application/xml; charset=UTF-8'},
-    )
-    # print('===Response===')
-    # print(resp)
-    # print('===Content===')
-    # print(content)
+        df.columns = [
+            "REPORT",
+            "TYPE",
+            "CURR_MW",
+            "CURR_PCT",
+            "LHH_MW",
+            "LHH_PCT",
+            "L24H_MW",
+            "L24H_PCT",
+        ]
+    except:
+        raise ValueError(f"BMRS response could not be successfully parsed\n\n{content}")
 
-    # print('===Finished===')
-    return content
-
+    coal_24h_percent = df["L24H_PCT"].values[0]
+    return {"statusCode": 200, "body": json.dumps(coal_24h_percent)}
 
 if __name__ == "__main__":
-    lambda_handler(1, 2)
+    print(lambda_handler(1, 2))
