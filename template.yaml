@@ -11,7 +11,13 @@ Globals:
     Timeout: 15
     Environment:
       Variables:
-        bmrs_key:
+        bmrs_key: !Ref Key
+
+Parameters:
+  Key:
+    Type: String
+    Description: BMRS API key
+    Default: default value
 
 Resources:
   HelloWorldFunction:

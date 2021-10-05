@@ -45,7 +45,7 @@ def lambda_handler(event, context):
         },
     )
     content = response.text
-
+    print(content)
     coal = content.split('\n')[1] # extract the COAL row from the reponse
     fields = coal.split(',')
     if len(fields) != 8:

@@ -1,3 +1,5 @@
+https://github.com/aws/aws-sam-cli/issues/1163
+
 # coal_free
 
 Recreating [an awesome power generation graphic](https://www.theguardian.com/environment/ng-interactive/2019/may/25/the-power-switch-tracking-britains-record-coal-free-run) from the Guardian
@@ -9,5 +11,12 @@ Recreating [an awesome power generation graphic](https://www.theguardian.com/env
 
 To deploy locally:
 
-- `sam build`
-- `sam local start-api`
+1. Start Docker
+2. Save environment variable `bmrs_key`
+3. `sam build`
+4. `sam local start-api`
+
+To deploy to prod:
+
+1. Save environment variable `bmrs_key`
+2. `sam deploy --parameter-overrides ParameterKey=Key,ParameterValue=$bmrs_key`
