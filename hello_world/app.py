@@ -1,5 +1,8 @@
 import json
 import os
+from datetime import date
+
+import boto3
 import requests
 
 
@@ -46,10 +49,27 @@ def lambda_handler(event, context):
     )
     content = response.text
     print(content)
-    coal = content.split('\n')[1] # extract the COAL row from the reponse
-    fields = coal.split(',')
-    if len(fields) != 8:
-        raise ValueError(f"Response from BMRS has unexpected length ({len(fields)}). Expected 8.")
     
+    coal = content.split("\n")[1]  #  extract the COAL row from the reponse
+    fields = coal.split(",")
+
+    if len(fields) != 8:
+        raise ValueError(
+            f"Response from BMRS has unexpected length ({len(fields)}). Expected 8."
+        )
+
     coal_24h_percent = fields[7]
+
+    dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
+    table = dynamodb.Table("coal")
+
+    with table.batch_writer() as batch:
+        batch.put_item(
+            Item={
+                "id": "test",
+                "date": date.today().isoformat(),
+                "coal_24h_percent": coal_24h_percent,
+            }
+        )
+
     return {"statusCode": 200, "body": coal_24h_percent}

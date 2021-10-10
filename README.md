@@ -14,7 +14,7 @@ To deploy locally:
 1. Start Docker
 2. Save environment variable `bmrs_key`
 3. `sam build`
-4. `sam local start-api`
+4. `sam local start-api` or `sam local invoke`
 
 To deploy to prod:
 
