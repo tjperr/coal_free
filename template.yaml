@@ -6,12 +6,7 @@ Description: >
   Sample SAM Template for my_first_sam
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-Globals:
-  Function:
-    Timeout: 20
-    Environment:
-      Variables:
-        bmrs_key: !Ref Key
+#Globals:
 
 Parameters:
   Key:
@@ -26,14 +21,14 @@ Resources:
       CodeUri: datacapture/
       Handler: app.lambda_handler
       Runtime: python3.7
+      Timeout: 20
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref Database
-
       Environment:
         Variables:
           DYNAMODB_NAME: !Ref Database
-
+          bmrs_key: !Ref Key
       Events:
         DataCapture:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -43,7 +38,7 @@ Resources:
         DailyRun:
           Type: Schedule
           Properties:
-            Schedule: cron(24 19 * * ? *)
+            Schedule: cron(0 12 * * ? *)
             Enabled: True
 
   Database:
