@@ -28,7 +28,12 @@ Resources:
       Runtime: python3.7
       Policies:
         - DynamoDBWritePolicy:
-            TableName: coal
+            TableName: !Ref Database
+
+      Environment:
+        Variables:
+          DYNAMODB_NAME: !Ref Database
+
       Events:
         DataCapture:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -40,6 +45,21 @@ Resources:
           Properties:
             Schedule: cron(24 19 * * ? *)
             Enabled: True
+
+  Database:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        - AttributeName: "date"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+        - AttributeName: "date"
+          KeyType: "RANGE"
+      BillingMode: PAY_PER_REQUEST
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

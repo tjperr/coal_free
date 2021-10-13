@@ -72,7 +72,7 @@ def lambda_handler(event, context):
         run_type = 'dev'
 
     dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
-    table = dynamodb.Table("coal")
+    table = dynamodb.Table(os.environ["DYNAMODB_NAME"])
 
     with table.batch_writer() as batch:
         batch.put_item(
