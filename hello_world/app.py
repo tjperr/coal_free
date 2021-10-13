@@ -4,6 +4,7 @@ from datetime import date
 
 import boto3
 import requests
+import uuid
 
 
 def lambda_handler(event, context):
@@ -37,7 +38,12 @@ def lambda_handler(event, context):
     #     raise e
 
     print("working")
-
+    print(event)
+    print("Lambda function ARN:", context.invoked_function_arn)
+    print("CloudWatch log stream name:", context.log_stream_name)
+    print("CloudWatch log group name:",  context.log_group_name)
+    print("Lambda Request ID:", context.aws_request_id)
+    print("Lambda function memory limits in MB:", context.memory_limit_in_mb)
     session = requests.session()
     response = session.get(
         f"https://api.bmreports.com/BMRS/FUELINSTHHCUR/v1",
@@ -60,14 +66,20 @@ def lambda_handler(event, context):
 
     coal_24h_percent = fields[7]
 
+    if 'detail-type' in event and event['detail-type'] == 'Scheduled Event':
+        run_type = 'prod'
+    else:
+        run_type = 'dev'
+
     dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
     table = dynamodb.Table("coal")
 
     with table.batch_writer() as batch:
         batch.put_item(
             Item={
-                "id": "test",
+                "id": str(uuid.uuid4()),
                 "date": date.today().isoformat(),
+                "run_type": run_type,
                 "coal_24h_percent": coal_24h_percent,
             }
         )
