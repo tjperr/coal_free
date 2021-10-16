@@ -30,7 +30,7 @@ Resources:
           bucket_name: !Ref DataStore
           bmrs_key: !Ref Key
       Events:
-        DataCapture:
+        Api:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /datacapture
@@ -55,7 +55,7 @@ Resources:
         Variables:
           bucket_name: !Ref DataStore
       Events:
-        DataCapture:
+        Api:
           Type: Api
           Properties:
             Path: /dataread
@@ -65,6 +65,11 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
 
+#Resources:
+# ApiResource:
+#   Type: AWS::Serverless::Api
+#   Properties:
+#     StageName: prod
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
