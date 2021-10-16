@@ -4,7 +4,6 @@ from datetime import date
 
 import boto3
 import requests
-import uuid
 
 
 def lambda_handler(event, context):

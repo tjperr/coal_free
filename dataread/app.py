@@ -1,11 +1,6 @@
 import json
 import os
-from datetime import date
-
 import boto3
-import requests
-import uuid
-
 
 def lambda_handler(event, context):
     """Read all historic data from the s3 datastore"""
