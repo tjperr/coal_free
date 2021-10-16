@@ -1,9 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  my_first_sam
-
-  Sample SAM Template for my_first_sam
+  Data read and data capture apis for the coal_free data visualisation
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 #Globals:
@@ -21,7 +19,7 @@ Resources:
       CodeUri: datacapture/
       Handler: app.lambda_handler
       Runtime: python3.7
-      Timeout: 45
+      Timeout: 60
       Policies:
         - S3CrudPolicy:
             BucketName: !Ref DataStore
@@ -65,11 +63,6 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
 
-#Resources:
-# ApiResource:
-#   Type: AWS::Serverless::Api
-#   Properties:
-#     StageName: prod
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
