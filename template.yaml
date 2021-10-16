@@ -78,3 +78,12 @@ Outputs:
   DataCaptureFunctionIamRole:
     Description: "Implicit IAM Role created for data capture function"
     Value: !GetAtt DataCaptureFunctionRole.Arn
+  DataReadApi:
+    Description: "API Gateway endpoint URL for Prod stage data read function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/dataread/"
+  DataReadFunction:
+    Description: "Data read Lambda Function ARN"
+    Value: !GetAtt DataReadFunction.Arn
+  DataReadFunctionIamRole:
+    Description: "Implicit IAM Role created for data read function"
+    Value: !GetAtt DataReadFunctionRole.Arn
