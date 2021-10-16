@@ -41,26 +41,25 @@ Resources:
             Schedule: cron(0 19 * * ? *)
             Enabled: True
 
-  # DataReadFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: dataread/
-  #     Handler: app.lambda_handler
-  #     Runtime: python3.7
-  #     Timeout: 10
-  #     Policies:
-  #       - DynamoDBReadPolicy:
-  #           TableName: !Ref Database
-  #     Environment:
-  #       Variables:
-  #         DYNAMODB_NAME: !Ref Database
-
-  #     Events:
-  #       DataCapture:
-  #         Type: Api
-  #         Properties:
-  #           Path: /dataread
-  #           Method: get
+  DataReadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dataread/
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Timeout: 10
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref DataStore
+      Environment:
+        Variables:
+          bucket_name: !Ref DataStore
+      Events:
+        DataCapture:
+          Type: Api
+          Properties:
+            Path: /dataread
+            Method: get
 
   DataStore:
     Type: AWS::S3::Bucket
