@@ -18,7 +18,3 @@ To deploy to prod:
 
 1. Save environment variable `bmrs_key`
 2. `sam deploy --parameter-overrides ParameterKey=Key,ParameterValue=$bmrs_key`
-
-To deploy the site:
-
-- Upload static site content with `aws s3 cp site/* s3://STATIC_SITE_NAME_HERE/`

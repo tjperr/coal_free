@@ -66,34 +66,6 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
 
-  Site:
-    Type: "AWS::S3::Bucket"
-    Properties:
-      AccessControl: PublicRead
-      MetricsConfigurations:
-        - Id: EntireBucket
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: error.html
-    DeletionPolicy: Retain
-
-  SiteBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref Site
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Action:
-              - "s3:GetObject"
-            Effect: Allow
-            Resource: !Join
-              - ""
-              - - "arn:aws:s3:::"
-                - !Ref Site
-                - /*
-            Principal: "*"
-
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -107,16 +79,3 @@ Outputs:
   DataCaptureFunctionIamRole:
     Description: "Implicit IAM Role created for data capture function"
     Value: !GetAtt DataCaptureFunctionRole.Arn
-  WebsiteURL:
-    Value: !GetAtt
-      - Site
-      - WebsiteURL
-    Description: URL for website hosted on S3
-  S3BucketSecureURL:
-    Value: !Join
-      - ""
-      - - "https://"
-        - !GetAtt
-          - Site
-          - DomainName
-    Description: Name of S3 bucket to hold website content
