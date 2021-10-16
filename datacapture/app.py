@@ -55,21 +55,20 @@ def lambda_handler(event, context):
     coal_24h_percent = fields[7]
 
     if 'detail-type' in event and event['detail-type'] == 'Scheduled Event':
-        run_type = 'prod'
+        filename = f"data.json"
     else:
-        run_type = 'dev'
+        filename = f"dev-data.json"
 
-    dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
-    table = dynamodb.Table(os.environ["DYNAMODB_NAME"])
+    s3 = boto3.resource('s3')
+    object = s3.Object(os.environ['bucket_name'], filename)
 
-    with table.batch_writer() as batch:
-        batch.put_item(
-            Item={
-                "id": str(uuid.uuid4()),
-                "date": date.today().isoformat(),
-                "run_type": run_type,
-                "coal_24h_percent": coal_24h_percent,
-            }
-        )
+    try: 
+        existing_data = json.loads(object.get()['Body'].read())
+    except:
+        print(f"object {filename} does not exist - creating new object")
+        existing_data = {}
+
+    existing_data[str(date.today().isoformat())] = coal_24h_percent
+    object.put(Body=json.dumps(existing_data))
 
     return {"statusCode": 200, "body": coal_24h_percent}

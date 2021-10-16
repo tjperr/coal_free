@@ -21,13 +21,13 @@ Resources:
       CodeUri: datacapture/
       Handler: app.lambda_handler
       Runtime: python3.7
-      Timeout: 20
+      Timeout: 45
       Policies:
-        - DynamoDBWritePolicy:
-            TableName: !Ref Database
+        - S3CrudPolicy:
+            BucketName: !Ref DataStore
       Environment:
         Variables:
-          DYNAMODB_NAME: !Ref Database
+          bucket_name: !Ref DataStore
           bmrs_key: !Ref Key
       Events:
         DataCapture:
@@ -38,23 +38,33 @@ Resources:
         DailyRun:
           Type: Schedule
           Properties:
-            Schedule: cron(0 12 * * ? *)
+            Schedule: cron(0 19 * * ? *)
             Enabled: True
 
-  Database:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: "id"
-          AttributeType: "S"
-        - AttributeName: "date"
-          AttributeType: "S"
-      KeySchema:
-        - AttributeName: "id"
-          KeyType: "HASH"
-        - AttributeName: "date"
-          KeyType: "RANGE"
-      BillingMode: PAY_PER_REQUEST
+  # DataReadFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     CodeUri: dataread/
+  #     Handler: app.lambda_handler
+  #     Runtime: python3.7
+  #     Timeout: 10
+  #     Policies:
+  #       - DynamoDBReadPolicy:
+  #           TableName: !Ref Database
+  #     Environment:
+  #       Variables:
+  #         DYNAMODB_NAME: !Ref Database
+
+  #     Events:
+  #       DataCapture:
+  #         Type: Api
+  #         Properties:
+  #           Path: /dataread
+  #           Method: get
+
+  DataStore:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
