@@ -42,7 +42,7 @@ def lambda_handler(event, context):
     )
     content = response.text
     print(content)
-    
+
     coal = content.split("\n")[1]  #  extract the COAL row from the reponse
     fields = coal.split(",")
 
@@ -53,16 +53,16 @@ def lambda_handler(event, context):
 
     coal_24h_percent = fields[7]
 
-    if 'detail-type' in event and event['detail-type'] == 'Scheduled Event':
+    if "detail-type" in event and event["detail-type"] == "Scheduled Event":
         filename = f"data.json"
     else:
         filename = f"dev-data.json"
 
-    s3 = boto3.resource('s3')
-    object = s3.Object(os.environ['bucket_name'], filename)
+    s3 = boto3.resource("s3")
+    object = s3.Object(os.environ["bucket_name"], filename)
 
-    try: 
-        existing_data = json.loads(object.get()['Body'].read())
+    try:
+        existing_data = json.loads(object.get()["Body"].read())
     except:
         print(f"object {filename} does not exist - creating new object")
         existing_data = {}
